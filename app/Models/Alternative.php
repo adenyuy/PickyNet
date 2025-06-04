@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str; // Untuk boot() method UUID
 
 class Alternative extends Model
 {
@@ -14,17 +15,23 @@ class Alternative extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'alternative_id', // Tambahkan jika Anda set UUID secara manual saat create
         'name',
         'image_path',
     ];
 
-    public function scores()
+    // Metode untuk auto-generate UUID
+    protected static function boot()
     {
-        return $this->hasMany(Score::class, 'alternative_id');
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
     }
 
-    public function calculations()
-    {
-        return $this->hasMany(Calculation::class, 'alternative_id');
-    }
+    // Relasi LAMA (kemungkinan akan dihapus/tidak dipakai)
+    // public function scores() { /* ... */ }
+    // public function calculations() { /* ... */ }
 }

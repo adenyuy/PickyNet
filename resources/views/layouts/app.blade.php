@@ -20,10 +20,8 @@
                     {{ request()->routeIs('home') ? 'underline underline-offset-4' : '' }}">Home</a>
                 <a href="{{ route('provider') }}" class="hover:text-blue-200 transition duration-300 ease-in-out
                     {{ request()->routeIs('provider') ? 'underline underline-offset-4' : '' }}">Provider</a>
-                <a href="{{ route('guide') }}" class="hover:text-blue-200 transition duration-300 ease-in-out
-                    {{ request()->routeIs('guide') ? 'underline underline-offset-4' : '' }}">Guide</a>
-                <a href="{{ route('pick') }}" class="hover:text-blue-200 transition duration-300 ease-in-out
-                    {{ request()->routeIs('pick') ? 'underline underline-offset-4' : '' }}">Pick</a>
+                <a href="{{ route('spk.pick') }}" class="hover:text-blue-200 transition duration-300 ease-in-out
+                    {{ request()->routeIs('spk.pick') ? 'underline underline-offset-4' : '' }}">Pick</a>
             </div>
 
             <div class="flex items-center space-x-4 relative">
@@ -57,13 +55,6 @@
                             </form>
                         </div>
                     </div>
-
-                    {{-- User Icon (Optional, if you prefer an icon beside the profile name button) --}}
-                    {{-- <div class="hidden md:block text-white">
-                        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div> --}}
                 @else
                     <a href="{{ route('login') }}" class="text-white px-4 py-2 rounded-full border border-white hover:bg-white hover:text-blue-500 transition duration-300 ease-in-out
                         {{ request()->routeIs('login') ? 'bg-white text-blue-500' : '' }}">Login</a>
@@ -91,10 +82,8 @@
                 {{ request()->routeIs('home') ? 'bg-blue-600' : '' }}">Home</a>
             <a href="{{ route('provider') }}" class="block px-3 py-2 rounded-md hover:bg-blue-600
                 {{ request()->routeIs('provider') ? 'bg-blue-600' : '' }}">Provider</a>
-            <a href="{{ route('guide') }}" class="block px-3 py-2 rounded-md hover:bg-blue-600
-                {{ request()->routeIs('guide') ? 'bg-blue-600' : '' }}">Guide</a>
-            <a href="{{ route('pick') }}" class="block px-3 py-2 rounded-md hover:bg-blue-600
-                {{ request()->routeIs('pick') ? 'bg-blue-600' : '' }}">Pick</a>
+            <a href="{{ route('spk.pick') }}" class="block px-3 py-2 rounded-md hover:bg-blue-600
+                {{ request()->routeIs('spk.pick') ? 'bg-blue-600' : '' }}">Pick</a>
             @auth
                 <a href="{{ route('profile') }}" class="block px-3 py-2 rounded-md hover:bg-blue-600
                     {{ request()->routeIs('profile') ? 'bg-blue-600' : '' }}">Profile</a>

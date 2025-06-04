@@ -63,27 +63,53 @@ Route::middleware('auth')->group(function () {
     Route::get('/provider', function () {
         return view('provider.index');
     })->name('provider');
-    Route::get('/guide', function () {
-        return view('guide.index');
-    })->name('guide');
 
-    Route::get('/pick', [PickController::class, 'index'])->name('pick');
+    Route::get('/pick', [SpkController::class, 'showPickPage'])->name('spk.pick');
 
+// routes/web.php
     Route::get('/profile', function () {
         $user = Auth::user();
-        $logs = $user->logs()->latest()->get(); // Pastikan relasi logs ada di model User
-        return view('profile.index', compact('user', 'logs'));
+        $allSpkSessions = $user->spkSessions()->latest()->get(); // Ambil semua sesi dulu
+
+        // Filter sesi yang memiliki hasil ranking (final_qi_ranking tidak kosong)
+        $completedSpkSessions = $allSpkSessions->filter(function ($session) {
+            // $session->final_qi_ranking di-cast sebagai array di model SpkSession
+            // Jadi kita cek apakah array tersebut tidak kosong
+            return !empty($session->final_qi_ranking);
+        });
+
+        return view('profile.index', [
+            'user' => $user,
+            'spkSessions' => $completedSpkSessions // Kirim data yang sudah difilter
+        ]);
     })->name('profile');
 
     // SPK Flow (Tahap-tahap perhitungan WASPAS)
-    Route::prefix('spk')->group(function () {
-        Route::get('/overview', [SpkController::class, 'overview'])->name('spk.overview'); // Pindahkan definisi overview ke controller
-        Route::post('/process-data', [SpkController::class, 'processData'])->name('spk.process-data'); // <--- PERBAIKAN DI SINI
-        Route::get('/assessment', [SpkController::class, 'assessment'])->name('spk.assessment');
-        Route::post('/save-assessment', [SpkController::class, 'saveAssessment'])->name('spk.save-assessment');
-        Route::get('/calculation', [SpkController::class, 'calculation'])->name('spk.calculation'); // Render halaman kosong/skeleton
-        Route::get('/get-calculation-data', [SpkController::class, 'getCalculationData'])->name('spk.get-calculation-data');
-        Route::get('/rank', [SpkController::class, 'rank'])->name('spk.rank');
+    Route::prefix('spk')->name('spk.')->group(function () {
+        // Menggantikan spk.process-data. Ini memulai sesi baru.
+        Route::post('/session/start', [SpkController::class, 'startNewSpkSession'])->name('session.start');
+
+        // Menampilkan overview dari sesi SPK yang aktif (dari PHP session)
+        Route::get('/overview', [SpkController::class, 'showOverview'])->name('overview');
+
+        // Menampilkan halaman penilaian untuk sesi SPK yang aktif
+        Route::get('/assessment', [SpkController::class, 'showAssessmentPage'])->name('assessment.show');
+
+        // Menyimpan skor untuk SATU alternatif via AJAX
+        Route::post('/assessment/store-alternative-score', [SpkController::class, 'storeAlternativeScore'])->name('assessment.store.alternative');
+
+        // Memfinalisasi semua penilaian & menjalankan kalkulasi WASPAS
+        // Dipanggil setelah semua alternatif dinilai (misal, tombol "Selesai & Hitung")
+        Route::post('/assessment/finalize', [SpkController::class, 'finalizeAndProcessSpk'])->name('assessment.finalize');
+
+        // Menampilkan halaman detail hasil perhitungan untuk sesi SPK tertentu
+        Route::get('/calculation/{sessionId}', [SpkController::class, 'showCalculationPage'])->name('calculation.show');
+
+        // Menampilkan halaman ranking akhir untuk sesi SPK tertentu
+        Route::get('/rank/{sessionId}', [SpkController::class, 'showRankPage'])->name('rank.show');
+
+        // Rute lama yang mungkin tidak diperlukan lagi dengan SpkSession:
+        // Route::get('/get-calculation-data', [SpkController::class, 'getCalculationData'])->name('get-calculation-data');
     });
 
     // Logout

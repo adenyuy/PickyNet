@@ -17,25 +17,33 @@ class SubCriteria extends Model
     protected $fillable = [
         'subkriteria_id',
         'kriteria_id',
-        'name',     
-        'value', 
+        'name',
+        'value',
+        'range_min', // <-- BAGUS, ini perlu ditambahkan setelah migrasi
+        'range_max', // <-- BAGUS, ini perlu ditambahkan setelah migrasi
     ];
+
+    // Tambahkan casts untuk tipe data yang spesifik
+    protected $casts = [
+        'value' => 'integer', // Sesuai migrasi Anda
+        'range_min' => 'decimal:2', // Sesuaikan presisi jika berbeda
+        'range_max' => 'decimal:2', // Sesuaikan presisi jika berbeda
+    ];
+
+    public $timestamps = true; // Sesuai migrasi Anda
 
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->{$model->getKeyName()} = (string) Str::uuid();
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
         });
     }
 
     public function criteria()
     {
         return $this->belongsTo(Criteria::class, 'kriteria_id', 'kriteria_id');
-    }
-
-    public function scores()
-    {
-        return $this->hasMany(Score::class, 'subkriteria_id');
     }
 }
