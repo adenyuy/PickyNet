@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-100">
     {{-- Header Section --}}
-    <nav class="bg-blue-500 p-4 shadow-md">
+    <nav class="bg-blue-500 p-4 shadow-md sticky top-0 w-full z-50">
         <div class="container mx-auto flex justify-between items-center">
             <a href="{{ route('home') }}" class="text-white text-2xl font-bold tracking-tight">PickyNet</a>
 

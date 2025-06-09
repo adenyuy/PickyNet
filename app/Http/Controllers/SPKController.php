@@ -63,26 +63,35 @@ class SpkController extends Controller
             return $request->expectsJson() ? response()->json(['error' => $message], 422) : back()->with('error', $message)->withInput();
         }
 
-        // Hitung bobot kriteria berdasarkan ranking (contoh: Rank Reciprocal)
+        // Hitung bobot kriteria berdasarkan ranking menggunakan metode Rank Order Centroid (ROC)
         $criteriaRankingAndWeights = [];
-        $sumOfReciprocals = 0;
-        foreach ($rankedCriteriaIds as $index => $kriteriaId) {
-            $rank = $index + 1;
-            $sumOfReciprocals += 1 / $rank;
+        $N = count($criteriaDetailsOrdered); // Dapatkan jumlah total kriteria (N)
+
+        if ($N === 0) {
+            // Handle case where there are no criteria
+            return $criteriaRankingAndWeights;
         }
 
         foreach ($criteriaDetailsOrdered as $index => $criterion) {
-            $rank = $index + 1;
-            $weight = 0;
-            if ($sumOfReciprocals > 0) {
-                $weight = round((1 / $rank) / $sumOfReciprocals, 4); // Pembulatan 4 angka desimal
+            $i_rank = $index + 1; // Peringkat kriteria saat ini (i dalam rumus ROC)
+            $sum_of_reciprocals_for_roc = 0;
+
+            // Menghitung sigma (sum) dari j=i sampai N dari 1/j
+            for ($j = $i_rank; $j <= $N; $j++) {
+                $sum_of_reciprocals_for_roc += (1 / $j);
             }
+
+            $weight = 0;
+            if ($N > 0) {
+                $weight = round((1 / $N) * $sum_of_reciprocals_for_roc, 4); // Rumus ROC
+            }
+
             $criteriaRankingAndWeights[] = [
                 'criteria_id' => $criterion->kriteria_id,
                 'name' => $criterion->name,
                 'type' => $criterion->type,
-                'input_method' => $criterion->input_method, // Simpan input_method
-                'rank' => $rank,
+                'input_method' => $criterion->input_method,
+                'rank' => $i_rank,
                 'weight' => $weight,
             ];
         }
@@ -115,7 +124,6 @@ class SpkController extends Controller
                 ]);
             }
             return redirect()->route('spk.overview');
-
         } catch (\Exception $e) {
             Log::error('Gagal membuat SPK Session: ' . $e->getMessage(), ['exception' => $e]);
             $message = 'Terjadi kesalahan internal saat memulai sesi SPK. Silakan coba lagi.';
@@ -190,9 +198,9 @@ class SpkController extends Controller
         $subCriteriasForView = [];
         if (!empty($criteriaIdsForSelectInput)) {
             $criteriaWithSubCriterias = Criteria::whereIn('kriteria_id', $criteriaIdsForSelectInput)
-                                                ->with('subCriterias') // Eager load relasi
-                                                ->get()
-                                                ->keyBy('kriteria_id');
+                ->with('subCriterias') // Eager load relasi
+                ->get()
+                ->keyBy('kriteria_id');
 
             foreach ($criteriaIdsForSelectInput as $criteriaId) {
                 if (isset($criteriaWithSubCriterias[$criteriaId]) && $criteriaWithSubCriterias[$criteriaId]->subCriterias) {
@@ -214,11 +222,11 @@ class SpkController extends Controller
         if (!empty($spkSession->user_scores)) {
             foreach ($spkSession->user_scores as $altScoreEntry) { // Loop per alternatif
                 $altId = $altScoreEntry['alternative_id'];
-                if(isset($altScoreEntry['scores']) && is_array($altScoreEntry['scores'])){
+                if (isset($altScoreEntry['scores']) && is_array($altScoreEntry['scores'])) {
                     foreach ($altScoreEntry['scores'] as $critScoreEntry) { // Loop per skor kriteria
                         $critId = $critScoreEntry['criteria_id'];
                         $key = $altId . '-' . $critId;
-                        
+
                         $alpineExistingSelections[$key] = [
                             // Jika input 'select', selected_sub_criterion_id akan ada
                             'subkriteria_id' => $critScoreEntry['selected_sub_criterion_id'] ?? null,
@@ -240,7 +248,7 @@ class SpkController extends Controller
         ]);
     }
 
-     public function storeAlternativeScore(Request $request)
+    public function storeAlternativeScore(Request $request)
     {
         $sessionId = $request->session()->get('current_spk_session_id');
         if (!$sessionId) {
@@ -306,20 +314,20 @@ class SpkController extends Controller
                         ->where(function ($query) use ($directInputValue) {
                             $query->where(function ($q) use ($directInputValue) { // Kondisi untuk range_min DAN range_max diisi
                                 $q->whereNotNull('range_min')
-                                  ->whereNotNull('range_max')
-                                  ->where('range_min', '<=', $directInputValue)
-                                  ->where('range_max', '>=', $directInputValue);
+                                    ->whereNotNull('range_max')
+                                    ->where('range_min', '<=', $directInputValue)
+                                    ->where('range_max', '>=', $directInputValue);
                             })->orWhere(function ($q) use ($directInputValue) { // Kondisi untuk range_min diisi, range_max null (lebih besar dari)
                                 $q->whereNotNull('range_min')
-                                  ->whereNull('range_max')
-                                  ->where('range_min', '<=', $directInputValue);
+                                    ->whereNull('range_max')
+                                    ->where('range_min', '<=', $directInputValue);
                             })->orWhere(function ($q) use ($directInputValue) { // Kondisi untuk range_max diisi, range_min null (lebih kecil dari)
                                 $q->whereNotNull('range_max')
-                                  ->whereNull('range_min')
-                                  ->where('range_max', '>=', $directInputValue);
+                                    ->whereNull('range_min')
+                                    ->where('range_max', '>=', $directInputValue);
                             })->orWhere(function ($q) { // Kondisi jika keduanya null (sangat tidak mungkin untuk range, tapi sebagai fallback)
                                 $q->whereNull('range_min')
-                                  ->whereNull('range_max');
+                                    ->whereNull('range_max');
                             });
                         })
                         ->orderBy('value', $criterionInfo['type'] === 'cost' ? 'asc' : 'desc') // Prioritaskan yg memberi skor lebih baik jika ada overlap (jarang)
@@ -334,7 +342,7 @@ class SpkController extends Controller
                         // Biarkan $finalScoreValue = 0 atau handle error (misal, beri skor terendah)
                     }
                 } else if ($directInputValue !== null) { // Input ada tapi tidak numerik
-                     Log::warning("Input '{$directInputValue}' tidak numerik untuk kriteria direct_value '{$criteriaId}'.", ['session_id' => $sessionId]);
+                    Log::warning("Input '{$directInputValue}' tidak numerik untuk kriteria direct_value '{$criteriaId}'.", ['session_id' => $sessionId]);
                 }
             }
 
@@ -385,7 +393,7 @@ class SpkController extends Controller
         ]);
     }
 
-        public function finalizeAndProcessSpk(Request $request)
+    public function finalizeAndProcessSpk(Request $request)
     {
         $sessionId = $request->session()->get('current_spk_session_id');
         if (!$sessionId) {
@@ -443,11 +451,10 @@ class SpkController extends Controller
                 ]);
             }
             return redirect()->route('spk.calculation.show', ['sessionId' => $spkSession->id])->with('success', $successMessage);
-
         } catch (\Exception $e) {
             Log::error('Error during WASPAS calculation or saving results for session ' . $sessionId . ': ' . $e->getMessage(), ['exception' => $e]);
             $errorMessage = 'Terjadi kesalahan saat melakukan perhitungan SPK. Silakan coba lagi atau hubungi administrator.';
-             if ($request->expectsJson()) {
+            if ($request->expectsJson()) {
                 return response()->json(['error' => $errorMessage], 500);
             }
             return redirect()->route('spk.assessment')->with('error', $errorMessage);
@@ -620,9 +627,9 @@ class SpkController extends Controller
             'multiplicative_importance' => $spkSession->q2_values, // [alternative_id => q2_score]
             'joint_criterion' => [],                              // [alternative_id => final_qi_score]
             'alternative_details' => Alternative::whereIn('alternative_id', $spkSession->selected_alternatives)
-                                                ->get()->keyBy('alternative_id')->all(), // Objek, bukan array toArray() agar bisa akses properti model
+                ->get()->keyBy('alternative_id')->all(), // Objek, bukan array toArray() agar bisa akses properti model
             'criteria_details' => collect($spkSession->criteria_ranking_and_weights)
-                                                ->keyBy('criteria_id')->all(), // Objek, bukan array toArray()
+                ->keyBy('criteria_id')->all(), // Objek, bukan array toArray()
         ];
 
         // Rekonstruksi decision_matrix dari spkSession->user_scores
@@ -649,14 +656,14 @@ class SpkController extends Controller
                 $calculationResults['joint_criterion'][$rankedItem['alternative_id']] = $rankedItem['final_qi'];
             }
         }
-        
+
         return view('spk.calculation', [
             'spkSession' => $spkSession, // Kirim seluruh objek SpkSession jika view membutuhkannya
             'calculationResults' => $calculationResults // Kirim array yang sudah diformat agar cocok dengan view lama
         ]);
     }
 
-        public function showRankPage(Request $request, $sessionId)
+    public function showRankPage(Request $request, $sessionId)
     {
         $spkSession = SpkSession::find($sessionId);
 
@@ -676,7 +683,7 @@ class SpkController extends Controller
         if (empty($rankingResults)) {
             // Jika hasil ranking kosong (mungkin perhitungan belum selesai atau ada masalah)
             return redirect()->route('spk.calculation.show', ['sessionId' => $sessionId])
-                             ->with('warning', 'Hasil ranking belum tersedia. Silakan periksa detail perhitungan.');
+                ->with('warning', 'Hasil ranking belum tersedia. Silakan periksa detail perhitungan.');
         }
 
         return view('spk.rank', [
