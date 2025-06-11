@@ -124,7 +124,7 @@
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('pickModal', () => ({
-        showModal: false,
+        showModal: !! @json(session('showModalAfterEdit')), // Menggunakan session untuk menentukan apakah modal harus ditampilkan
         currentPage: 1,
         selectedAlternatives: {}, // { alternative_id: true/false }
         // Ambil data kriteria awal dari Blade (sudah diurutkan sesuai keinginan Anda dari controller)
@@ -184,7 +184,12 @@ document.addEventListener('alpine:init', () => {
             if (Object.values(this.selectedAlternatives).filter(Boolean).length >= 2) {
                 this.currentPage = 2;
             } else {
-                alert('Pilih minimal 2 provider untuk dibandingkan.');
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Pilih minimal 2 provider untuk melanjutkan.',
+                    confirmButtonText: 'OK'
+                });
             }
         },
 
@@ -192,7 +197,12 @@ document.addEventListener('alpine:init', () => {
         async submitSpkSession() {
             if (!this.csrfToken) {
                 console.error('CSRF token tidak ditemukan.');
-                alert('Terjadi kesalahan: CSRF token tidak ditemukan.');
+                swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan',
+                    text: 'CSRF token tidak ditemukan. Silakan muat ulang halaman.',
+                    confirmButtonText: 'OK'
+                });
                 return;
             }
 
@@ -200,12 +210,22 @@ document.addEventListener('alpine:init', () => {
             const finalRankedCriteriaIds = this.rankedCriterias.map(c => c.kriteria_id);
 
             if (finalSelectedAlternatives.length < 2) {
-                 alert('Pilih minimal 2 provider untuk dibandingkan.');
+                 swal.fire({
+                 icon: 'warning',
+                 title: 'Peringatan',
+                 text: 'Pilih minimal 2 provider untuk melanjutkan.',
+                 confirmButtonText: 'OK'
+                 });
                  this.currentPage = 1; // Kembali ke halaman pemilihan alternatif
                  return;
             }
             if (finalRankedCriteriaIds.length === 0) { // Atau validasi lain untuk kriteria
-                alert('Harap pastikan urutan kriteria sudah benar.');
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Silakan urutkan kriteria sebelum melanjutkan.',
+                    confirmButtonText: 'OK'
+                });
                 return;
             }
 
@@ -236,7 +256,11 @@ document.addEventListener('alpine:init', () => {
                         for (const field in result.errors) {
                             errorMessages += `- ${result.errors[field].join(', ')}\n`;
                         }
-                        alert(errorMessages);
+                        swal.fire({
+                            icon: 'error',
+                            text: errorMessages,
+                            confirmButtonText: 'OK'
+                        });
                     } else {
                         throw new Error(result.message || result.error || 'Gagal mengirim data ke server.');
                     }
@@ -255,7 +279,11 @@ document.addEventListener('alpine:init', () => {
 
             } catch (error) {
                 console.error('Error saat submitSpkSession:', error);
-                alert('Terjadi kesalahan saat memproses data: ' + error.message);
+                swal.fire({
+                    icon: 'error',
+                    text: 'Terjadi kesalahan saat memproses data: ' + error.message,
+                    confirmButtonText: 'OK'
+                });
                 // this.showModal = false; // Opsional: tutup modal jika error parah
             }
         }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,18 @@
 
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     @stack('scripts')
-    
+
     <style>
         [x-cloak] {
             display: none !important;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 font-sans antialiased flex flex-col min-h-screen">
 
     <div class="w-full h-2 bg-gray-200 relative">
@@ -39,4 +43,5 @@
 
 
 </body>
+
 </html>

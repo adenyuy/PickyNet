@@ -7,7 +7,7 @@
     $activeSessionId = session('current_spk_session_id') ?? ($spkSession->id ?? null);
 @endphp
 
-<div class="w-full bg-white shadow-md flex items-center justify-around py-3 border-t-2 border-gray-200 fixed bottom-0 left-0 right-0 z-40">
+<div class="w-full bg-white shadow-md flex items-center justify-around py-3 border-t-2 border-gray-200 sticky bottom-0 left-0 right-0 z-40">
     {{-- Tombol Overview --}}
     <a href="{{ route('spk.overview') }}" class="flex flex-col items-center text-sm
         {{ $currentPageName === 'overview' ? 'text-blue-600 font-semibold' : 'text-gray-500 hover:text-blue-600 transition' }}">

@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
 
         // Menampilkan overview dari sesi SPK yang aktif (dari PHP session)
         Route::get('/overview', [SpkController::class, 'showOverview'])->name('overview');
+        Route::post('/overview', [SpkController::class, 'showEditModal'])->name('overview.edit');
 
         // Menampilkan halaman penilaian untuk sesi SPK yang aktif
         Route::get('/assessment', [SpkController::class, 'showAssessmentPage'])->name('assessment.show');

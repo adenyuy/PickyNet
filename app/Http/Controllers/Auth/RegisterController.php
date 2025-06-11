@@ -46,6 +46,6 @@ class RegisterController extends Controller
         Auth::login($user);
 
         // Setelah registrasi, user baru akan diarahkan ke deskripsi page
-        return redirect()->route('description');
+        return redirect()->route('login');
     }
 }

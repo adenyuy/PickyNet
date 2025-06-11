@@ -57,7 +57,7 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="calculationData.alternative_details[alternativeId].name"></td>
                                     <template x-for="criteriaId in Object.keys(calculationData.criteria_details)" :key="criteriaId">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="calculationData.decision_matrix[alternativeId]?.[criteriaId] || 'N/A'"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="calculationData.decision_matrix[alternativeId]?.[criteriaId] || '0'"></td>
                                     </template>
                                 </tr>
                             </template>
@@ -70,7 +70,7 @@
         {{-- 1. The Normalized Decision Matrix ($R^*$) --}}
         {{-- HTML untuk tabel ini sama seperti yang sudah Anda punya, menggunakan calculationData.normalized_matrix --}}
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">1. Matriks Keputusan Ternormalisasi ($R_{ij}$)</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">1. Matriks Keputusan Ternormalisasi (R<sub>ij</sub>)</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -86,7 +86,7 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="calculationData.alternative_details[alternativeId].name"></td>
                                 <template x-for="criteriaId in Object.keys(calculationData.criteria_details)" :key="criteriaId">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="calculationData.normalized_matrix[alternativeId]?.[criteriaId] || 'N/A'"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="calculationData.normalized_matrix[alternativeId]?.[criteriaId] || '0'"></td>
                                 </template>
                             </tr>
                         </template>
@@ -98,7 +98,7 @@
         {{-- Bobot Kriteria ($w_j$) --}}
         {{-- HTML untuk tabel ini sama seperti yang sudah Anda punya, menggunakan calculationData.weights --}}
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Bobot Kriteria ($w_j$)</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Bobot Kriteria (w<sub>j</sub>)</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -111,7 +111,7 @@
                         <template x-for="criteriaId in Object.keys(calculationData.criteria_details)" :key="criteriaId">
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="calculationData.criteria_details[criteriaId].name"></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="calculationData.weights[criteriaId] || 'N/A'"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="calculationData.weights[criteriaId] || '0'"></td>
                             </tr>
                         </template>
                     </tbody>
@@ -122,12 +122,12 @@
         {{-- 2. The Additive Relative Importance ($Q^{(1)}$) --}}
         {{-- HTML untuk daftar ini sama seperti yang sudah Anda punya, menggunakan calculationData.additive_importance --}}
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">2. Weighted Sum Model ($Q_i^{(1)}$)</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">2. Weighted Sum Model (Q<sub>i</sub><sup>(1)</sup>) </h3>
             <ul class="divide-y divide-gray-200">
                 <template x-for="alternativeId in Object.keys(calculationData.alternative_details)" :key="alternativeId">
                     <li class="py-3 flex justify-between items-center text-sm">
                         <span class="font-medium text-gray-900" x-text="calculationData.alternative_details[alternativeId].name"></span>
-                        <span class="text-gray-600" x-text="calculationData.additive_importance[alternativeId] || 'N/A'"></span>
+                        <span class="text-gray-600" x-text="calculationData.additive_importance[alternativeId] || '0'"></span>
                     </li>
                 </template>
             </ul>
@@ -136,12 +136,12 @@
         {{-- 3. The Multiplicative Relative Importance ($Q^{(2)}$) --}}
         {{-- HTML untuk daftar ini sama seperti yang sudah Anda punya, menggunakan calculationData.multiplicative_importance --}}
          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">3. Weighted Product Model ($Q_i^{(2)}$)</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">3. Weighted Product Model (Q<sub>i</sub><sup>(2)</sup>)</h3>
             <ul class="divide-y divide-gray-200">
                 <template x-for="alternativeId in Object.keys(calculationData.alternative_details)" :key="alternativeId">
                     <li class="py-3 flex justify-between items-center text-sm">
                         <span class="font-medium text-gray-900" x-text="calculationData.alternative_details[alternativeId].name"></span>
-                        <span class="text-gray-600" x-text="calculationData.multiplicative_importance[alternativeId] || 'N/A'"></span>
+                        <span class="text-gray-600" x-text="calculationData.multiplicative_importance[alternativeId] || '0'"></span>
                     </li>
                 </template>
             </ul>
@@ -150,12 +150,12 @@
         {{-- 4. The Joint Generalized Criterion ($Q$) --}}
         {{-- HTML untuk daftar ini sama seperti yang sudah Anda punya, menggunakan calculationData.joint_criterion --}}
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">4. Nilai Akhir Preferensi ($Q_i$)</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">4. Nilai Akhir Preferensi (Q<sub>i</sub>)</h3>
             <ul class="divide-y divide-gray-200">
                 <template x-for="alternativeId in Object.keys(calculationData.alternative_details)" :key="alternativeId">
                     <li class="py-3 flex justify-between items-center text-sm font-semibold">
                         <span class="text-gray-900" x-text="calculationData.alternative_details[alternativeId].name"></span>
-                        <span class="text-blue-600 text-lg" x-text="calculationData.joint_criterion[alternativeId] || 'N/A'"></span>
+                        <span class="text-blue-600 text-lg" x-text="calculationData.joint_criterion[alternativeId] || '0'"></span>
                     </li>
                 </template>
             </ul>

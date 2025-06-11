@@ -31,7 +31,10 @@ class SpkController extends Controller
     /**
      * Memproses pilihan awal pengguna (alternatif & kriteria dari pick page)
      * dan memulai/membuat record SpkSession baru.
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
+    
     public function startNewSpkSession(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -165,7 +168,12 @@ class SpkController extends Controller
         ]);
     }
 
-    // ... (lanjutan SpkController.php) ...
+    public function showEditModal(Request $request)
+    {
+        $request->session()->flash('showModalAfterEdit', true);
+
+        return redirect()->route('spk.pick');
+    }
 
     /**
      * Menampilkan halaman penilaian (assessment) untuk alternatif yang dipilih dalam sesi SPK aktif.

@@ -15,9 +15,12 @@
             <div class="bg-white rounded-xl shadow-lg p-6 relative">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-gray-800">Alternatif Dipilih</h2>
-                    <a href="{{ route('spk.pick') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-full text-sm transition duration-200">
-                        Edit Pilihan
-                    </a>
+                    <form action="{{ route('spk.overview.edit') }}" method="POST">
+                        @csrf
+                        <button type="submit"  class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-full text-sm transition duration-200">
+                            Edit Pilihan
+                        </button>
+                    </form>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     @if($selectedAlternativeDetails->isNotEmpty())
@@ -56,9 +59,12 @@
             <div class="bg-white rounded-xl shadow-lg p-6 relative">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-gray-800">Urutan Kriteria</h2>
-                    <a href="{{ route('spk.pick') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-full text-sm transition duration-200">
-                        Edit Urutan
-                    </a>
+                    <form action="{{ route('spk.overview.edit') }}" method="POST">
+                        @csrf
+                        <button type="submit"  class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 rounded-full text-sm transition duration-200">
+                            Edit Urutan
+                        </button>
+                    </form>
                 </div>
                 @if($rankedCriteriaDetails->isNotEmpty())
                     <ul class="space-y-3">

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class GoogleController extends Controller
 {
@@ -19,7 +20,7 @@ class GoogleController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')->user();
             $user = User::where('email', $googleUser->getEmail())->first();
 
             $isNewUser = false;
@@ -46,7 +47,7 @@ class GoogleController extends Controller
             }
 
         } catch (\Exception $e) {
-            \Log::error('Google Auth Error: ' . $e->getMessage());
+            Log::error('Google Auth Error: ' . $e->getMessage());
             return redirect()->route('login')->with('error', 'Login dengan Google gagal: ' . $e->getMessage());
         }
     }

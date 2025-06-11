@@ -18,30 +18,34 @@
     {{-- Daftar Alternatif --}}
     <div class="space-y-4 w-full max-w-2xl mx-auto mb-8">
         @forelse($selectedAlternatives as $alternative)
-            <div @click="openAssessmentModal('{{ $alternative->alternative_id }}', '{{ $alternative->name }}')"
-                 class="bg-white rounded-lg shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition duration-200">
-                <div class="flex items-center space-x-4">
-                    <img src="{{ asset('storage/' . $alternative->image_path) }}" alt="{{ $alternative->name }}" class="h-12 w-12 object-contain">
-                    <span class="text-xl font-semibold text-gray-800">{{ $alternative->name }}</span>
-                </div>
-                {{-- Indikator status penilaian --}}
-                <template x-if="isAlternativeFullyAssessed('{{ $alternative->alternative_id }}')">
-                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </template>
-                <template x-else>
-                    <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </template>
+        <div @click="openAssessmentModal('{{ $alternative->alternative_id }}', '{{ $alternative->name }}')"
+            class="bg-white rounded-lg shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition duration-200">
+            <div class="flex items-center space-x-4">
+                <img src="{{ asset('storage/' . $alternative->image_path) }}" alt="{{ $alternative->name }}" class="h-12 w-12 object-contain">
+                <span class="text-xl font-semibold text-gray-800">{{ $alternative->name }}</span>
             </div>
+            {{-- Indikator status penilaian --}}
+            <template x-if="isAlternativeFullyAssessed('{{ $alternative->alternative_id }}')">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </template>
+            <template x-else>
+                <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </template>
+        </div>
         @empty
-            <p class="text-center text-gray-600">Tidak ada alternatif yang dipilih untuk penilaian.</p>
+        <p class="text-center text-gray-600">Tidak ada alternatif yang dipilih untuk penilaian.</p>
         @endforelse
     </div>
 
     {{-- Tombol Finalisasi Penilaian (muncul jika semua alternatif sudah dinilai) --}}
     <div class="w-full max-w-2xl mx-auto text-center" x-show="selectedAlternatives.length > 0">
         <button @click="finalizeAssessments"
-                :disabled="!areAllAlternativesFullyAssessed()"
-                class="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">
+            :disabled="!areAllAlternativesFullyAssessed()"
+            class="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">
             <span x-show="!finalizing">Selesai & Lanjutkan ke Perhitungan</span>
             <span x-show="finalizing">Memproses...</span>
         </button>
@@ -58,7 +62,9 @@
             <div class="p-6 border-b border-gray-200 relative">
                 <h2 class="text-2xl font-bold text-gray-800 text-center" x-text="`Penilaian untuk ${selectedAlternativeName}`"></h2>
                 <button @click="closeAssessmentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
             </div>
 
@@ -68,12 +74,13 @@
                     <template x-for="criteria in rankedCriterias" :key="criteria.criteria_id">
                         <div>
                             <label :for="`assess_${selectedAlternativeId}_${criteria.criteria_id}`" x-text="criteria.name" class="block text-lg font-medium text-gray-700 mb-1"></label>
-                            
+
                             {{-- Input untuk Tipe 'select' --}}
                             <template x-if="criteria.input_method === 'select'">
                                 <select :id="`assess_${selectedAlternativeId}_${criteria.criteria_id}`"
-                                        x-model="tempAssessments[criteria.criteria_id].selectedSubkriteriaId"
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    x-model="tempAssessments[criteria.criteria_id].selectedSubkriteriaId"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                    :class="{'border-red-500': validationErrors[criteria.criteria_id]}">
                                     <option value="">Pilih Subkriteria</option>
                                     <template x-if="subCriteriasForSelect[criteria.criteria_id] && subCriteriasForSelect[criteria.criteria_id].length > 0">
                                         <template x-for="subItem in subCriteriasForSelect[criteria.criteria_id]" :key="subItem.subkriteria_id">
@@ -89,11 +96,14 @@
                             {{-- Input untuk Tipe 'direct_value' --}}
                             <template x-if="criteria.input_method === 'direct_value'">
                                 <input type="number" :id="`assess_${selectedAlternativeId}_${criteria.criteria_id}`"
-                                       x-model.number="tempAssessments[criteria.criteria_id].directValueInput"
-                                       placeholder="Masukkan nilai numerik"
-                                       class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                {{-- Anda bisa tambahkan validasi atau petunjuk rentang di sini jika perlu --}}
+                                    x-model.number="tempAssessments[criteria.criteria_id].directValueInput"
+                                    placeholder="Masukkan nilai numerik"
+                                    class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                    :class="{'border-red-500': validationErrors[criteria.criteria_id]}">
                             </template>
+
+                            {{-- Tampilkan pesan error --}}
+                            <p x-show="validationErrors[criteria.criteria_id]" x-text="validationErrors[criteria.criteria_id]" class="text-red-500 text-sm mt-1"></p>
                         </div>
                     </template>
                 </template>
@@ -105,8 +115,8 @@
             {{-- Modal Footer --}}
             <div class="p-6 border-t border-gray-200 flex justify-end">
                 <button @click="saveCurrentAlternativeAssessment"
-                        :disabled="!isModalFormValid() || savingAlternative"
-                        class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+
+                    class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-lg transition duration-200">
                     <span x-show="!savingAlternative">Simpan Penilaian</span>
                     <span x-show="savingAlternative">Menyimpan...</span>
                 </button>
@@ -116,202 +126,320 @@
 </div>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('assessmentPage', (spkSessionId, alternatives, criterias, subCriteriasOptions, initialExistingSelections) => ({
-        showAssessmentModal: false,
-        selectedAlternativeId: null,
-        selectedAlternativeName: '',
-        spkSessionId: spkSessionId,
-        
-        // Data dari PHP Controller
-        selectedAlternatives: alternatives, // Ini adalah array objek {alternative_id, name, image_path}
-        rankedCriterias: criterias,         // Ini adalah array objek {criteria_id, name, type, input_method, rank, weight}
-        subCriteriasForSelect: subCriteriasOptions, // { criteria_id: [ {subkriteria_id, name, value}, ... ] }
-        
-        // Menyimpan skor yang sudah ada dari server, format: { 'alt_id-crit_id': { subkriteria_id: X, direct_input_value: Y } }
-        // Akan diupdate setelah setiap penyimpanan sukses
-        liveExistingSelections: initialExistingSelections,
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('assessmentPage', (spkSessionId, alternatives, criterias, subCriteriasOptions, initialExistingSelections) => ({
+            showAssessmentModal: false,
+            selectedAlternativeId: null,
+            selectedAlternativeName: '',
+            spkSessionId: spkSessionId,
 
-        tempAssessments: {}, // Untuk form di modal: { criteria_id: { selectedSubkriteriaId: '', directValueInput: '' } }
-        savingAlternative: false,
-        finalizing: false,
+            selectedAlternatives: alternatives,
+            rankedCriterias: criterias,
+            subCriteriasForSelect: subCriteriasOptions,
 
-        init() {
-            console.log('Assessment Page Alpine Data Initialized');
-            console.log('Alternatives:', this.selectedAlternatives);
-            console.log('Ranked Criterias:', this.rankedCriterias);
-            console.log('SubCriterias for Select:', this.subCriteriasForSelect);
-            console.log('Initial Existing Selections:', this.liveExistingSelections);
-        },
+            liveExistingSelections: initialExistingSelections,
 
-        openAssessmentModal(alternativeId, alternativeName) {
-            this.selectedAlternativeId = alternativeId;
-            this.selectedAlternativeName = alternativeName;
-            this.tempAssessments = {}; // Reset
+            tempAssessments: {},
+            validationErrors: {}, // Objek untuk menyimpan pesan error validasi per kriteria_id
+            savingAlternative: false,
+            finalizing: false,
 
-            this.rankedCriterias.forEach(criteria => {
-                const key = `${alternativeId}-${criteria.criteria_id}`;
-                const existing = this.liveExistingSelections[key];
-                
-                this.tempAssessments[criteria.criteria_id] = {
-                    selectedSubkriteriaId: (criteria.input_method === 'select' && existing) ? (existing.subkriteria_id || '') : '',
-                    directValueInput: (criteria.input_method === 'direct_value' && existing) ? (existing.direct_input_value || '') : ''
-                };
-            });
-            this.showAssessmentModal = true;
-        },
+            init() {
+                console.log('Assessment Page Alpine Data Initialized');
+                console.log('Alternatives:', this.selectedAlternatives);
+                console.log('Ranked Criterias:', this.rankedCriterias);
+                console.log('SubCriterias for Select:', this.subCriteriasForSelect);
+                console.log('Initial Existing Selections:', this.liveExistingSelections);
+            },
 
-        closeAssessmentModal() {
-            this.showAssessmentModal = false;
-            // Tidak perlu reset selectedAlternativeId dll di sini karena akan di-set ulang saat openAssessmentModal
-        },
+            openAssessmentModal(alternativeId, alternativeName) {
+                this.selectedAlternativeId = alternativeId;
+                this.selectedAlternativeName = alternativeName;
+                this.tempAssessments = {}; // Reset penilaian sementara
+                this.validationErrors = {}; // Reset error validasi saat modal dibuka
 
-        isModalFormValid() {
-            if (Object.keys(this.tempAssessments).length === 0) return false;
-            return this.rankedCriterias.every(criteria => {
-                const assessment = this.tempAssessments[criteria.criteria_id];
-                if (!assessment) return false;
-                if (criteria.input_method === 'select') {
-                    return assessment.selectedSubkriteriaId && assessment.selectedSubkriteriaId !== '';
-                } else if (criteria.input_method === 'direct_value') {
-                    return assessment.directValueInput !== '' && assessment.directValueInput !== null && !isNaN(parseFloat(assessment.directValueInput));
+                // Populate tempAssessments with existing data or defaults
+                this.rankedCriterias.forEach(criteria => {
+                    const key = `${alternativeId}-${criteria.criteria_id}`;
+                    const existing = this.liveExistingSelections[key];
+
+                    this.tempAssessments[criteria.criteria_id] = {
+                        selectedSubkriteriaId: (criteria.input_method === 'select' && existing) ? (existing.subkriteria_id || '') : '',
+                        directValueInput: (criteria.input_method === 'direct_value' && existing) ? (existing.direct_input_value || '') : ''
+                    };
+                });
+                this.showAssessmentModal = true;
+            },
+
+            closeAssessmentModal() {
+                this.showAssessmentModal = false;
+            },
+
+            isModalFormValid() {
+                if (Object.keys(this.tempAssessments).length === 0 && this.rankedCriterias.length > 0) {
+                    // If there are criteria but no tempAssessments, something is wrong
+                    return false;
                 }
-                return false; // Kriteria tanpa input_method yang dikenali
-            });
-        },
 
-        async saveCurrentAlternativeAssessment() {
-            if (!this.isModalFormValid()) {
-                alert('Harap lengkapi semua field penilaian di modal ini.');
-                return;
-            }
-            this.savingAlternative = true;
+                this.validationErrors = {}; // Reset errors on each validation attempt
+                let allValid = true;
 
-            const submissions = [];
-            this.rankedCriterias.forEach(criteria => {
-                const assessmentData = this.tempAssessments[criteria.criteria_id];
-                submissions.push({
-                    kriteria_id: criteria.criteria_id,
-                    // Kirim keduanya, backend akan memilih berdasarkan input_method kriteria
-                    selectedSubkriteriaId: assessmentData.selectedSubkriteriaId || null,
-                    directValueInput: assessmentData.directValueInput !== '' ? assessmentData.directValueInput : null
-                });
-            });
+                this.rankedCriterias.forEach(criteria => {
+                    const assessment = this.tempAssessments[criteria.criteria_id];
 
-            const dataToSubmit = {
-                alternative_id: this.selectedAlternativeId,
-                assessments: submissions,
-                _token: '{{ csrf_token() }}' // Ambil CSRF dari Blade
-            };
-
-            try {
-                const response = await fetch('{{ route('spk.assessment.store.alternative') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': dataToSubmit._token
-                    },
-                    body: JSON.stringify(dataToSubmit)
-                });
-                const result = await response.json();
-
-                if (!response.ok) {
-                    let errorMsg = result.message || 'Gagal menyimpan penilaian.';
-                    if (result.errors) {
-                        errorMsg += "\nDetails:\n";
-                        for (const field in result.errors) {
-                            errorMsg += `- ${result.errors[field].join(', ')}\n`;
-                        }
+                    if (!assessment) {
+                        this.validationErrors[criteria.criteria_id] = `Penilaian untuk ${criteria.name} tidak ditemukan.`;
+                        allValid = false;
+                        return;
                     }
-                    throw new Error(errorMsg);
+
+                    if (criteria.input_method === 'select') {
+                        if (!assessment.selectedSubkriteriaId || assessment.selectedSubkriteriaId === '') {
+                            this.validationErrors[criteria.criteria_id] = `Pilih subkriteria untuk ${criteria.name}.`;
+                            allValid = false;
+                        }
+                    } else if (criteria.input_method === 'direct_value') {
+                        const inputValue = assessment.directValueInput;
+                        const numericValue = parseFloat(inputValue);
+
+                        // 1. Validasi Kosong
+                        if (inputValue === '' || inputValue === null || inputValue === undefined) {
+                            this.validationErrors[criteria.criteria_id] = `Masukkan nilai untuk ${criteria.name}.`;
+                            allValid = false;
+                        }
+                        // 2. Validasi Angka
+                        else if (isNaN(numericValue) || !isFinite(inputValue)) {
+                            this.validationErrors[criteria.criteria_id] = `Nilai untuk ${criteria.name} harus berupa angka.`;
+                            allValid = false;
+                        }
+                        // 3. Validasi Nilai Negatif atau Nol
+                        else if (numericValue <= 0) {
+                            this.validationErrors[criteria.criteria_id] = `Nilai untuk ${criteria.name} harus lebih besar dari 0.`;
+                            allValid = false;
+                        }
+                        // Tambahkan validasi rentang min/max jika ada di objek kriteria
+                        // else if (criteria.min_value !== undefined && numericValue < criteria.min_value) {
+                        //     this.validationErrors[criteria.criteria_id] = `Nilai minimum untuk ${criteria.name} adalah ${criteria.min_value}.`;
+                        //     allValid = false;
+                        // } else if (criteria.max_value !== undefined && numericValue > criteria.max_value) {
+                        //     this.validationErrors[criteria.criteria_id] = `Nilai maksimum untuk ${criteria.name} adalah ${criteria.max_value}.`;
+                        //     allValid = false;
+                        // }
+                    } else {
+                        this.validationErrors[criteria.criteria_id] = `Metode input tidak dikenal untuk ${criteria.name}.`;
+                        allValid = false;
+                    }
+                });
+
+                return allValid;
+            },
+
+            async saveCurrentAlternativeAssessment() {
+                // Panggil validasi form modal
+                if (!this.isModalFormValid()) {
+                    // HANYA TAMPILKAN ERROR DI BAWAH FIELD. TIDAK ADA SWEETALERT DI SINI.
+                    return; // Hentikan eksekusi jika validasi gagal
                 }
-                
-                alert(result.message);
-                // Update liveExistingSelections dengan data yang baru disimpan/diproses dari backend
-                if (result.processed_scores && Array.isArray(result.processed_scores)) {
-                    result.processed_scores.forEach(ps => {
-                        const key = `${this.selectedAlternativeId}-${ps.criteria_id}`;
-                        this.liveExistingSelections[key] = {
-                            subkriteria_id: ps.selected_sub_criterion_id, // Ini ID subkriteria (bisa dari 'select' atau hasil mapping 'direct_value')
-                            direct_input_value: ps.direct_input_value, // Input mentah jika ada
-                            value: ps.value // Skor akhir
-                        };
+
+                this.savingAlternative = true; // Aktifkan spinner
+
+                const submissions = [];
+                this.rankedCriterias.forEach(criteria => {
+                    const assessmentData = this.tempAssessments[criteria.criteria_id];
+                    submissions.push({
+                        kriteria_id: criteria.criteria_id,
+                        selectedSubkriteriaId: assessmentData.selectedSubkriteriaId || null,
+                        directValueInput: assessmentData.directValueInput !== '' ? assessmentData.directValueInput : null
                     });
-                }
-                this.closeAssessmentModal();
-            } catch (error) {
-                console.error('Error menyimpan penilaian:', error);
-                alert('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.savingAlternative = false;
-            }
-        },
-        
-        // Untuk ikon ceklis/silang di daftar alternatif utama
-        isAlternativeFullyAssessed(alternativeId) {
-            if (!this.rankedCriterias || this.rankedCriterias.length === 0) return true; // Anggap terisi jika tidak ada kriteria
-            return this.rankedCriterias.every(criteria => {
-                const key = `${alternativeId}-${criteria.criteria_id}`;
-                const existing = this.liveExistingSelections[key];
-                // Cukup cek apakah ada entri 'value' (skor akhir) yang valid.
-                // Backend akan memastikan 'value' terisi jika input valid.
-                return existing && (existing.value !== null && existing.value !== undefined);
-            });
-        },
-
-        // Untuk mengaktifkan/menonaktifkan tombol finalisasi
-        areAllAlternativesFullyAssessed() {
-            if (!this.selectedAlternatives || this.selectedAlternatives.length === 0) return false;
-            return this.selectedAlternatives.every(alt => this.isAlternativeFullyAssessed(alt.alternative_id));
-        },
-
-        async finalizeAssessments() {
-            if (!this.areAllAlternativesFullyAssessed()) {
-                alert('Harap lengkapi penilaian untuk semua alternatif yang dipilih.');
-                return;
-            }
-            if (!confirm('Apakah Anda yakin ingin menyelesaikan semua penilaian dan melanjutkan ke perhitungan? Anda tidak dapat mengubah penilaian setelah ini untuk sesi ini.')) {
-                return;
-            }
-            this.finalizing = true;
-
-            try {
-                const response = await fetch('{{ route('spk.assessment.finalize') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ spk_session_id: this.spkSessionId }) // Kirim ID sesi jika diperlukan backend
                 });
-                const result = await response.json();
 
-                if (!response.ok) {
-                     let errorMsg = result.message || result.error || 'Gagal memfinalisasi penilaian.';
-                    if (result.errors) { // Untuk error validasi (misal, jika backend cek ulang)
-                        errorMsg += "\nDetails:\n";
-                        for (const field in result.errors) {
-                            errorMsg += `- ${result.errors[field].join(', ')}\n`;
+                const dataToSubmit = {
+                    alternative_id: this.selectedAlternativeId,
+                    assessments: submissions,
+                    _token: '{{ csrf_token() }}'
+                };
+
+                try {
+                    const response = await fetch('{{ route("spk.assessment.store.alternative") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': dataToSubmit._token
+                        },
+                        body: JSON.stringify(dataToSubmit)
+                    });
+                    const resultData = await response.json();
+
+                    if (!response.ok) {
+                        // Tangani error dari backend (termasuk validasi server-side)
+                        if (resultData.errors) {
+                            // Jika backend mengembalikan error validasi spesifik, tampilkan di bawah field
+                            // Pastikan kunci error dari backend sesuai dengan criteria_id Anda
+                            Object.keys(resultData.errors).forEach(criteriaId => {
+                                this.validationErrors[criteriaId] = resultData.errors[criteriaId].join(', ');
+                            });
                         }
+                        // Opsional: Jika ada error umum dari backend yang bukan validasi field, tampilkan di SweetAlert
+                        const generalErrorMsg = resultData.message || resultData.error || 'Terjadi kesalahan saat menyimpan penilaian.';
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menyimpan!',
+                            text: generalErrorMsg,
+                            confirmButtonText: 'OK'
+                        });
+                        return; // Penting: Hentikan eksekusi setelah menampilkan error dari backend
                     }
-                    throw new Error(errorMsg);
+
+                    // Jika sukses, tampilkan SweetAlert sukses (ini tetap ada agar ada feedback)
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Penilaian Berhasil Disimpan',
+                        text: resultData.message || 'Penilaian berhasil disimpan.',
+                        confirmButtonText: 'OK',
+                        timer: 1500, // Opsional: timer singkat untuk pesan sukses
+                        timerProgressBar: true
+                    });
+
+                    // Update liveExistingSelections dengan data yang baru disimpan/diproses dari backend
+                    if (resultData.processed_scores && Array.isArray(resultData.processed_scores)) {
+                        resultData.processed_scores.forEach(ps => {
+                            const key = `${this.selectedAlternativeId}-${ps.criteria_id}`;
+                            this.liveExistingSelections[key] = {
+                                subkriteria_id: ps.selected_sub_criterion_id,
+                                direct_input_value: ps.direct_input_value,
+                                value: ps.value
+                            };
+                        });
+                    }
+                    this.closeAssessmentModal(); // Tutup modal setelah sukses
+                } catch (error) {
+                    console.error('Error saat melakukan fetch atau memproses respons:', error);
+                    // Jika terjadi error jaringan atau error tak terduga lainnya
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Terjadi kesalahan jaringan atau server tidak merespons. Silakan coba lagi.',
+                        confirmButtonText: 'OK'
+                    });
+                } finally {
+                    this.savingAlternative = false; // Nonaktifkan spinner
+                }
+            },
+
+            // isAlternativeFullyAssessed dan areAllAlternativesFullyAssessed tetap sama
+            isAlternativeFullyAssessed(alternativeId) {
+                if (!this.rankedCriterias || this.rankedCriterias.length === 0) return true;
+                return this.rankedCriterias.every(criteria => {
+                    const key = `${alternativeId}-${criteria.criteria_id}`;
+                    const existing = this.liveExistingSelections[key];
+                    return existing && (existing.value !== null && existing.value !== undefined);
+                });
+            },
+
+            areAllAlternativesFullyAssessed() {
+                if (!this.selectedAlternatives || this.selectedAlternatives.length === 0) return false;
+                return this.selectedAlternatives.every(alt => this.isAlternativeFullyAssessed(alt.alternative_id));
+            },
+
+            // Finalize Assessments (sesuai diskusi terakhir, ini tetap pakai SweetAlert)
+            async finalizeAssessments() {
+                if (!this.areAllAlternativesFullyAssessed()) {
+                    await Swal.fire({
+                        icon: 'warning',
+                        text: 'Harap lengkapi penilaian untuk semua alternatif sebelum melanjutkan.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
                 }
 
-                alert(result.message);
-                if (result.redirect_url) {
-                    window.location.href = result.redirect_url;
-                }
+                try {
+                    const resultConfirmation = await Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: 'Anda tidak dapat mengubah penilaian setelah ini untuk sesi ini.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, selesaikan!',
+                        cancelButtonText: 'Batal',
+                        showLoaderOnConfirm: true,
+                        allowOutsideClick: () => !Swal.isLoading()
+                    });
 
-            } catch (error) {
-                console.error('Error memfinalisasi penilaian:', error);
-                alert('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.finalizing = false;
+                    if (resultConfirmation.isConfirmed) {
+                        this.finalizing = true;
+
+                        try {
+                            const response = await fetch('{{ route("spk.assessment.finalize") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    spk_session_id: this.spkSessionId
+                                })
+                            });
+                            const resultData = await response.json();
+
+                            if (!response.ok) {
+                                let errorMsg = resultData.message || resultData.error || 'Gagal memfinalisasi penilaian.';
+                                if (resultData.errors) {
+                                    errorMsg += "\nDetails:\n";
+                                    for (const field in resultData.errors) {
+                                        errorMsg += `- ${resultData.errors[field].join(', ')}\n`;
+                                    }
+                                }
+                                throw new Error(errorMsg);
+                            }
+
+                            let timerInterval;
+                            await Swal.fire({
+                                icon: 'success',
+                                title: 'Penilaian Berhasil',
+                                text: resultData.message,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                    const b = Swal.getHtmlContainer().querySelector('b');
+                                    timerInterval = setInterval(() => {
+                                        if (b) {
+                                            b.textContent = Swal.getTimerLeft();
+                                        }
+                                    }, 100);
+                                },
+                                willClose: () => {
+                                    clearInterval(timerInterval);
+                                }
+                            });
+                            if (resultData.redirect_url) {
+                                window.location.href = resultData.redirect_url;
+                            }
+
+                        } catch (error) {
+                            console.error('Error memfinalisasi penilaian:', error);
+                            await Swal.fire({
+                                icon: 'error',
+                                title: 'Terjadi Kesalahan',
+                                text: error.message,
+                                confirmButtonText: 'OK'
+                            });
+                        } finally {
+                            this.finalizing = false;
+                        }
+                    } else {
+                        console.log('Pembatalan oleh pengguna.');
+                        this.finalizing = false;
+                    }
+                } catch (swalError) {
+                    console.error('SweetAlert konfirmasi error:', swalError);
+                    this.finalizing = false;
+                }
             }
-        }
-    }));
-});
+        }));
+    });
 </script>
 @endsection

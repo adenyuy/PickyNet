@@ -42,10 +42,10 @@
 
                 <form method="POST" action="{{ route('register') }}" class="space-y-4">
                     @csrf
-                    <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required autofocus class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
-                    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
-                    <input type="password" name="password" placeholder="Password" required autocomplete="new-password" class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
-                    <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" required autocomplete="new-password" class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
+                    <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" autofocus class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
+                    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
+                    <input type="password" name="password" placeholder="Password" autocomplete="new-password" class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
+                    <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" autocomplete="new-password" class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-[#00BCF1] py-2">
 
                     <button type="submit" class="hidden">Daftar</button>
                 </form>
